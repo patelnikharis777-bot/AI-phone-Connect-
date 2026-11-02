@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Phone Connect</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#101827;
+ color:white;
+}
+header{
+ background:#17243a;
+ padding:20px;
+ text-align:center;
+ border-bottom:1px solid #34445d;
+}
+header h2{margin:0;color:#54d6ff}
+.container{padding:18px;max-width:600px;margin:auto}
+.card{
+ background:#1c2b42;
+ padding:18px;
+ border-radius:15px;
+ margin:15px 0;
+}
+h3{margin-top:0;color:#54d6ff}
+button{
+ background:#08a9dc;
+ color:white;
+ border:0;
+ padding:12px 16px;
+ border-radius:9px;
+ font-weight:bold;
+ cursor:pointer;
+ margin-top:8px;
+}
+input{
+ width:100%;
+ padding:13px;
+ border-radius:8px;
+ border:1px solid #52647c;
+ background:#101827;
+ color:white;
+ margin:8px 0;
+}
+.status{color:#a8dff0;font-size:14px}
+#chatBox{
+ height:150px;
+ overflow:auto;
+ background:#101827;
+ padding:10px;
+ border-radius:8px;
+ margin-bottom:10px;
+}
+footer{text-align:center;color:#8796aa;padding:20px}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>📱 AI Phone Connect</h2>
+<p>Connect • Share • Chat • AI</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h3>1. Phone Connection</h3>
+<p>Generate a pairing code on one phone.</p>
+<button onclick="generateCode()">Generate Code</button>
+<h2 id="myCode">------</h2>
+<input id="pairCode" placeholder="Enter other phone code">
+<button onclick="pairPhone()">Connect Phone</button>
+<p class="status" id="pairStatus">Not connected</p>
+</div>
+
+<div class="card">
+<h3>2. Screen Sharing</h3>
+<p>Share your screen after giving browser permission.</p>
+<button onclick="shareScreen()">Start Screen Sharing</button>
+<p class="status" id="screenStatus">Screen sharing not started</p>
+<video id="screenVideo" autoplay playsinline
+style="width:100%;display:none;border-radius:10px"></video>
+</div>
+
+<div class="card">
+<h3>3. AI Assistant</h3>
+<div id="chatBox">AI Assistant: Hello! Ask me something.</div>
+<input id="question" placeholder="Type your question">
+<button onclick="askAI()">Send</button>
+<p class="status" id="aiStatus">Demo assistant — AI service not connected.</p>
+</div>
+
+<div class="card">
+<h3>4. Public Website</h3>
+<p>Open this website on both phones using the same public link.</p>
+<p class="status">Secure HTTPS hosting is required for online connection and screen sharing.</p>
+</div>
+
+</div>
+
+<footer>AI Phone Connect © 2026</footer>
+
+<script>
+let generatedCode = "";
+
+function generateCode(){
+ generatedCode = Math.floor(100000 + Math.random()*900000).toString();
+ document.getElementById("myCode").innerText = generatedCode;
+ document.getElementById("pairStatus").innerText =
+ "Code generated. Share it with the other phone.";
+}
+
+function pairPhone(){
+ let entered = document.getElementById("pairCode").value.trim();
+
+ if(!entered){
+  document.getElementById("pairStatus").innerText =
+  "Please enter a pairing code.";
+  return;
+ }
+
+ if(entered === generatedCode){
+  document.getElementById("pairStatus").innerText =
+  "This is your own phone's code. Use the other phone's code.";
+ }else{
+  document.getElementById("pairStatus").innerText =
+  "Code entered. Real online pairing needs a secure server.";
+ }
+}
+
+async function shareScreen(){
+ const status = document.getElementById("screenStatus");
+ const video = document.getElementById("screenVideo");
+
+ try{
+  const stream = await navigator.mediaDevices.getDisplayMedia({
+   video:true,
+   audio:false
+  });
+  video.srcObject = stream;
+  video.style.display = "block";
+  status.innerText = "Your screen is being shared on this device.";
+  stream.getVideoTracks()[0].onended = () => {
+   status.innerText = "Screen sharing stopped.";
+   video.style.display = "none";
+  };
+ }catch(error){
+  status.innerText = "Screen sharing unavailable. Use a supported HTTPS browser.";
+ }
+}
+
+function askAI(){
+ const input = document.getElementById("question");
+ const box = document.getElementById("chatBox");
+ const question = input.value.trim();
+
+ if(!question)return;
+
+ box.innerHTML += "<p><b>You:</b> " + escapeHTML(question) + "</p>";
+ box.innerHTML += "<p><b>AI:</b> Demo mode. A real AI service needs secure backend setup.</p>";
+ input.value = "";
+ box.scrollTop = box.scrollHeight;
+}
+
+function escapeHTML(text){
+ return text.replace(/[&<>"']/g, char => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#039;"
+ })[char]);
+}
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCT72IBoLugqBMoAZrmqcQ1Q42ZnHsxnCw",
+  authDomain: "ai-phone-connect.firebaseapp.com",
+  databaseURL: "https://ai-phone-connect-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "ai-phone-connect",
+  storageBucket: "ai-phone-connect.firebasestorage.app",
+  messagingSenderId: "851919597957",
+  appId: "1:851919597957:web:96e9740be52c6a1a5814ec"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
+
+signInAnonymously(auth)
+  .then(() => console.log("Firebase connected!"))
+  .catch(error => console.error("Firebase error:", error));
+</script>
+</body>
+</html>
