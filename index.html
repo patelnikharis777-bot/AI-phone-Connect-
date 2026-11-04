@@ -131,7 +131,9 @@ signInAnonymously(auth)
 });
 
 function randomCode(){
-  return Math.random().toString(36).substring(2,14).toUpperCase();
+  return Array.from(crypto.getRandomValues(new Uint8Array(12)))
+.map(x => "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"[x % 36])
+.join("");
 }
 
 window.createCode = async function(){
