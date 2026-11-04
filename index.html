@@ -174,7 +174,7 @@ window.joinPhone = async function(){
   const code = document.getElementById("joinCode")
     .value.trim().toUpperCase();
 
-  if(code.length !== 12){
+  if(!/^[A-Z0-9]{12}$/.test(code)){
     alert("Enter a valid 12-character code.");
     return;
   }
